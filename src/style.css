@@ -1,0 +1,12 @@
+.brand-logo {
+  display: block;
+  width: 16rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.hide-pilot-ranges .pilot-range,
+.hide-atc-ranges .atc-range,
+.hide-other-ranges .other-range {
+  display: none;
+}

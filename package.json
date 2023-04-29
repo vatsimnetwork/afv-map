@@ -1,0 +1,38 @@
+{
+  "name": "afv-map",
+  "version": "2.0.0",
+  "description": "Live map of Audio for VATSIM clients",
+  "homepage": "https://github.com/vatsimnetwork/afv-map#readme",
+  "bugs": "https://github.com/vatsimnetwork/afv-map/issues",
+  "license": "AGPL-3.0-or-later",
+  "author": "VATSIM Inc. <tech@vatsim.net> (https://www.vatsim.net/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vatsimnetwork/afv-map.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "check": "prettier --check .",
+    "format": "prettier --write .",
+    "lint": "eslint src --ext js,ts --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/leaflet": "^1.9.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "bootstrap": "^5.2.3",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "leaflet": "^1.9.3",
+    "leaflet-marker-rotation": "^0.4.0",
+    "prettier": "2.8.8",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  }
+}
