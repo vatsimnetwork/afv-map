@@ -44,12 +44,10 @@ export class TransceiverMap {
   private clients: Record<string, Client> = {};
 
   constructor(element: string | HTMLElement) {
-    this.map = L.map(element)
-      .setView([44.341393, -3.91534], 2)
-      .setMaxBounds([
-        [-90, -180],
-        [90, 180],
-      ]);
+    this.map = L.map(element, {
+      center: [0, 0],
+      zoom: 2,
+    });
 
     const maps = {
       Dark: dark,

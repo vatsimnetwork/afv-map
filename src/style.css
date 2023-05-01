@@ -5,6 +5,10 @@
   padding: 1rem;
 }
 
+.leaflet-container {
+  background-color: transparent;
+}
+
 .hide-pilot-ranges .pilot-range,
 .hide-atc-ranges .atc-range,
 .hide-other-ranges .other-range {
