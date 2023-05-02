@@ -42,12 +42,16 @@ const dark = L.tileLayer(
 export class TransceiverMap {
   private readonly map: L.Map;
   private clients: Record<string, Client> = {};
+  private filteredCallsign: string | null;
 
   constructor(element: string | HTMLElement) {
     this.map = L.map(element, {
       center: [0, 0],
       zoom: 2,
     });
+
+    const queryArgs = new URLSearchParams(window.location.search);
+    this.filteredCallsign = queryArgs.get("callsign");
 
     const maps = {
       Dark: dark,
@@ -85,6 +89,9 @@ export class TransceiverMap {
     const data = (await response.json()) as { clients: ClientData[] };
 
     for (const client of data.clients) {
+      if (this.filteredCallsign && client.callsign !== this.filteredCallsign) {
+        continue;
+      }
       this.upsertClient(client);
     }
 
