@@ -1,11 +1,9 @@
 const getMapData = async () => {
-  const fsdResp = await fetch(
-    "https://cluster.data.vatsim.net/v3/vatsim-data.json"
-  );
+  const fsdResp = await fetch("https://data.vatsim.net/v3/vatsim-data.json");
   const dataFeed = await fsdResp.json();
 
   const afvResp = await fetch(
-    "https://voice1.vatsim.uk/api/v1/network/online/callsigns"
+    "https://data.vatsim.net/v3/transceivers-data.json"
   );
   const voiceClients = await afvResp.json();
 
