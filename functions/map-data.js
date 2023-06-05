@@ -67,6 +67,17 @@ const getMapData = async () => {
     delete transceivers[controller.callsign];
   }
 
+  for (const controller of dataFeed.atis) {
+    clients.push({
+      type: "CONTROLLER",
+      callsign: controller.callsign,
+      name: controller.name,
+      frequency: controller.frequency,
+      transceivers: transceivers[controller.callsign] || [],
+    });
+    delete transceivers[controller.callsign];
+  }
+
   for (const callsign in transceivers) {
     clients.push({
       type: "OTHER",
