@@ -5,12 +5,13 @@ import { instantiateClient } from "./clients/factory.ts";
 import { ClientData } from "./types.ts";
 
 // Map Layers
+const cartoKey = import.meta.env.VITE_CARTO_API_KEY;
+
 const basic = L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  `https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`,
   {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: "abcd",
     maxZoom: 20,
     minZoom: 0,
   }
@@ -29,11 +30,10 @@ const satellite = L.tileLayer(
 );
 
 const dark = L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  `https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`,
   {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: "abcd",
     maxZoom: 20,
     minZoom: 0,
   }
