@@ -10,37 +10,34 @@
   <body class="h-100 bg-black">
     <div class="container-fluid d-flex h-100 flex-column">
       <img class="brand-logo" alt="VATSIM" src="/img/logo.png" />
-      <div class="mb-1 mt-3 mt-md-2 text-center text-md-start">
-        <h3 class="text-white">
-          <span id="online-count">
-            <i class="fas fa-spinner fa-pulse"></i>
-          </span>
-        </h3>
-      </div>
       <div class="row flex-grow-1">
         <div class="col-md-3 mb-4 mb-md-0">
           <section class="card h-100 bg-dark">
             <div class="card-body d-flex flex-column">
-              <p>
-                <button
-                  class="btn btn-secondary btn-sm"
-                  id="toggle-pilot-ranges"
-                >
-                  Toggle Pilot Rings
-                </button>
-                <button class="btn btn-secondary btn-sm" id="toggle-atc-ranges">
-                  Toggle ATC Rings
-                </button>
-                <button
-                  class="btn btn-secondary btn-sm"
-                  id="toggle-other-ranges"
-                >
-                  Toggle VOI Only
-                </button>
-              </p>
+              <div class="online-count" id="online-count">
+                <i class="fas fa-spinner fa-pulse"></i>
+              </div>
+              <div class="ring-toggles">
+                <label class="ring-toggle" for="toggle-pilot-ranges">
+                  <input type="checkbox" id="toggle-pilot-ranges" checked />
+                  <span class="ring-switch"></span>
+                  <span class="ring-label">Pilots</span>
+                </label>
+                <label class="ring-toggle" for="toggle-atc-ranges">
+                  <input type="checkbox" id="toggle-atc-ranges" checked />
+                  <span class="ring-switch"></span>
+                  <span class="ring-label">ATC</span>
+                </label>
+                <label class="ring-toggle" for="toggle-other-ranges">
+                  <input type="checkbox" id="toggle-other-ranges" />
+                  <span class="ring-switch"></span>
+                  <span class="ring-label">Voice only</span>
+                </label>
+              </div>
+
               <div class="position-relative h-100">
                 <div
-                  class="position-absolute top-0 h-100 w-100 overflow-scroll"
+                  class="position-absolute top-0 h-100 w-100 client-list"
                   id="client-list"
                 ></div>
               </div>

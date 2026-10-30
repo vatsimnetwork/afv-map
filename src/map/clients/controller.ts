@@ -2,7 +2,7 @@ import L from "leaflet";
 
 import { atisIcon, controllerIcon } from "../icons";
 import { ClientData, Transceiver } from "../types";
-import { getCenterOfCoordinates } from "../util.ts";
+import { getCenterOfCoordinates, renderListEntry } from "../util.ts";
 import Client from "./client.ts";
 
 class Controller extends Client {
@@ -73,33 +73,40 @@ class Controller extends Client {
     }
   }
 
-  public getListText() {
-    const { callsign, frequency, transceivers } = this.clientData;
+  private getFrequencies(): string[] {
+    const { frequency, transceivers } = this.clientData;
 
-    const frequencies = new Set();
-    frequencies.add(frequency);
-    transceivers.map((t: Transceiver) => frequencies.add(t.frequency));
-    if (frequencies.size === 0) {
-      frequencies.add("No frequency");
+    const frequencies = new Set<string>();
+    if (frequency) {
+      frequencies.add(frequency);
     }
+    transceivers.forEach((t: Transceiver) => frequencies.add(t.frequency));
 
-    return `<strong>${callsign}</strong> - ${Array.from(frequencies).join(
-      ", "
-    )}`;
+    return Array.from(frequencies);
+  }
+
+  public getListText() {
+    const { callsign, frequency } = this.clientData;
+    const kind = frequency === "199.998" ? "obs" : "atc";
+
+    return renderListEntry(callsign, this.getFrequencies(), kind);
   }
 
   private getPopupContent(frequency = "") {
     const { callsign, name } = this.clientData;
+    const kind = this.clientData.frequency === "199.998" ? "obs" : "atc";
     if (!frequency) {
-      frequency = this.clientData.frequency;
+      frequency = this.getFrequencies().join(" · ") || "—";
     }
 
-    let content = `<strong>${callsign}</strong><br>${frequency}<br>`;
-    if (!this.isAtis) {
-      content += name + "<br>";
-    }
-
-    return content;
+    return `<div class="map-popup">
+      <div class="popup-header">
+        <span class="kind-dot kind-${kind}"></span>
+        <span class="popup-callsign">${callsign}</span>
+      </div>
+      ${!this.isAtis ? `<div class="popup-name">${name}</div>` : ""}
+      <div class="popup-freq-block">${frequency}</div>
+    </div>`;
   }
 
   public position(): L.LatLngExpression {

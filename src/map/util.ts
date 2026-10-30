@@ -34,3 +34,28 @@ export function getCenterOfCoordinates(transceivers: Transceiver[]) {
 
   return [finalLat, finalLng];
 }
+
+export type ClientKind = "pilot" | "atc" | "obs" | "voi";
+
+const kindTitles: Record<ClientKind, string> = {
+  pilot: "Pilot",
+  atc: "ATC",
+  obs: "Observer",
+  voi: "Voice only",
+};
+
+export function renderListEntry(
+  callsign: string,
+  frequencies: string[],
+  kind: ClientKind
+) {
+  const unique = [...new Set(frequencies)];
+  const freqText =
+    unique.length > 0
+      ? unique.join(`<span class="freq-sep">·</span>`)
+      : `<span class="freq-none">—</span>`;
+
+  return `<span class="kind-dot kind-${kind}" title="${kindTitles[kind]}"></span>
+    <span class="entry-callsign">${callsign}</span>
+    <span class="entry-freqs">${freqText}</span>`;
+}

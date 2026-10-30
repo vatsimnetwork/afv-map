@@ -62,26 +62,37 @@ export class TransceiverMap {
     dark.addTo(this.map);
     L.control.layers(maps).addTo(this.map);
 
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    document
-      .getElementById("toggle-pilot-ranges")!
-      .addEventListener("click", () =>
-        this.toggleMapClass("hide-pilot-ranges")
-      );
-    document
-      .getElementById("toggle-atc-ranges")!
-      .addEventListener("click", () => this.toggleMapClass("hide-atc-ranges"));
-    document
-      .getElementById("toggle-other-ranges")!
-      .addEventListener("click", () =>
-        this.toggleMapClass("hide-other-ranges")
-      );
-    /* eslint-enable @typescript-eslint/no-non-null-assertion */
+    this.setupRangeToggle("toggle-pilot-ranges", "hide-pilot-ranges", true);
+    this.setupRangeToggle("toggle-atc-ranges", "hide-atc-ranges", true);
+    this.setupRangeToggle("toggle-other-ranges", "hide-other-ranges", false);
+
+    const listEl = document.getElementById("client-list");
+    listEl?.addEventListener("click", (e) => {
+      const entry = (e.target as HTMLElement).closest(".clientEntry");
+      if (entry?.id) {
+        this.clientClicked(entry.id);
+      }
+    });
 
     void this.reloadMapData();
     setInterval(() => {
       void this.reloadMapData();
     }, 15000);
+  }
+
+  setupRangeToggle(inputId: string, hideClass: string, defaultActive: boolean) {
+    const input = document.getElementById(inputId) as HTMLInputElement | null;
+    if (!input) return;
+
+    input.checked = defaultActive;
+
+    input.addEventListener("change", () => {
+      if (input.checked) {
+        this.map.getContainer().classList.remove(hideClass);
+      } else {
+        this.map.getContainer().classList.add(hideClass);
+      }
+    });
   }
 
   async reloadMapData() {
@@ -101,7 +112,7 @@ export class TransceiverMap {
 
     this.removeClients(this.findDisconnectedClients(data.clients));
 
-    this.setClientsOnline(Object.keys(this.clients).length);
+    this.setClientsOnline();
     this.setClientList();
   }
 
@@ -136,10 +147,43 @@ export class TransceiverMap {
     delete this.clients[callsign];
   }
 
-  setClientsOnline(num: number) {
+  setClientsOnline() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const el = document.getElementById("online-count")!;
-    el.innerText = `${num} clients connected`;
+    const all = Object.values(this.clients);
+    const total = all.length;
+    const pilots = all.filter((c) => c.clientData.type === "PILOT").length;
+    const atc = all.filter((c) => c.clientData.type === "CONTROLLER").length;
+    const voi = total - pilots - atc;
+
+    const pilotPct = total > 0 ? (pilots / total) * 100 : 0;
+    const atcPct = total > 0 ? (atc / total) * 100 : 0;
+    const voiPct = total > 0 ? (voi / total) * 100 : 0;
+
+    el.innerHTML = `
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-label">Online</span>
+          <span class="stat-value">${total.toLocaleString("en-US")}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Pilots</span>
+          <span class="stat-value stat-pilot">${pilots.toLocaleString(
+            "en-US"
+          )}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">ATC</span>
+          <span class="stat-value stat-atc">${atc.toLocaleString(
+            "en-US"
+          )}</span>
+        </div>
+      </div>
+      <div class="stats-bar">
+        <span class="bar-seg bar-pilot" style="width: ${pilotPct}%"></span>
+        <span class="bar-seg bar-atc" style="width: ${atcPct}%"></span>
+        <span class="bar-seg bar-voi" style="width: ${voiPct}%"></span>
+      </div>`;
   }
 
   setClientList() {
@@ -155,16 +199,9 @@ export class TransceiverMap {
     el.innerHTML = clients
       .map(
         (c: Client) =>
-          `<div class="text-white clientEntry" id='${c.callsign()}'>${c.getListText()}</div>`
+          `<div class="clientEntry" id='${c.callsign()}'>${c.getListText()}</div>`
       )
       .join("");
-
-    const clientEls = document.getElementsByClassName("clientEntry");
-    for (const i of clientEls) {
-      i.addEventListener("click", () => {
-        this.clientClicked(i.id);
-      });
-    }
   }
 
   clientClicked(callsign: string) {

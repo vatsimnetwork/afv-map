@@ -2,7 +2,7 @@ import L from "leaflet";
 
 import { atisIcon } from "../icons";
 import { ClientData, Transceiver } from "../types.ts";
-import { getCenterOfCoordinates } from "../util.ts";
+import { getCenterOfCoordinates, renderListEntry } from "../util.ts";
 import Client from "./client.ts";
 
 class Other extends Client {
@@ -33,7 +33,13 @@ class Other extends Client {
 
     for (const transceiver of transceivers) {
       const { id, frequency, latitude, longitude } = transceiver;
-      const content = `<strong>${callsign}</strong><br>${frequency}`;
+      const content = `<div class="map-popup">
+        <div class="popup-header">
+          <span class="kind-dot kind-voi"></span>
+          <span class="popup-callsign">${callsign}</span>
+        </div>
+        <div class="popup-freq-block">${frequency}</div>
+      </div>`;
 
       const marker = this.markers[id];
       if (marker) {
@@ -66,10 +72,17 @@ class Other extends Client {
     for (const transceiver of transceivers) {
       const { id, frequency, latitude, longitude, radius } = transceiver;
 
-      let content = `<strong>${callsign}</strong><br>`;
-      if (this.isAtis) {
-        content += frequency + "<br>";
-      }
+      const content = `<div class="map-popup">
+        <div class="popup-header">
+          <span class="kind-dot kind-voi"></span>
+          <span class="popup-callsign">${callsign}</span>
+        </div>
+        ${
+          this.isAtis || frequency
+            ? `<div class="popup-freq-block">${frequency}</div>`
+            : ""
+        }
+      </div>`;
 
       const rangeRing = this.rangeRings[id];
       if (rangeRing) {
@@ -92,16 +105,11 @@ class Other extends Client {
   public getListText() {
     const { callsign, transceivers } = this.clientData;
 
-    let frequencies = transceivers.map((t: Transceiver) => t.frequency);
-    if (frequencies.length === 0) {
-      frequencies.push("No frequency");
-    }
-
-    frequencies = [...new Set(frequencies)];
-
-    return `<strong>${callsign}</strong> - ${frequencies.join(
-      ", "
-    )} [VOI only]`;
+    return renderListEntry(
+      callsign,
+      transceivers.map((t: Transceiver) => t.frequency),
+      "voi"
+    );
   }
 
   public position(): L.LatLngExpression {
