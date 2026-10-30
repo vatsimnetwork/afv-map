@@ -3,6 +3,7 @@ import "leaflet-marker-rotation";
 
 import { pilotIcon } from "../icons";
 import { ClientData, Transceiver } from "../types.ts";
+import { renderListEntry } from "../util.ts";
 import Client from "./client.ts";
 
 class Pilot extends Client {
@@ -71,29 +72,52 @@ class Pilot extends Client {
   public getListText() {
     const { callsign, transceivers } = this.clientData;
 
-    const frequencies = transceivers.map((t: Transceiver) => t.frequency);
-    if (frequencies.length === 0) {
-      frequencies.push("No frequency");
-    }
-
-    return `<strong>${callsign}</strong> - ${frequencies.join(", ")}`;
+    return renderListEntry(
+      callsign,
+      transceivers.map((t: Transceiver) => t.frequency),
+      "pilot"
+    );
   }
 
   private getPopupContent() {
-    const { callsign, name, altitude, groundspeed } = this.clientData;
+    const { callsign, name, altitude, groundspeed, transceivers } =
+      this.clientData;
     const fp = this.clientData.flight_plan;
+    const freqs = [
+      ...new Set(transceivers.map((t: Transceiver) => t.frequency)),
+    ];
+    const freqText = freqs.length > 0 ? freqs.join(" · ") : "—";
 
-    let content = `<strong>${callsign}</strong><br>${name}<br>`;
+    const routeHtml = fp
+      ? `<div class="popup-route">
+          <span class="route-icao">${fp.departure || "----"}</span>
+          <span class="route-arrow">→</span>
+          <span class="route-icao">${fp.arrival || "----"}</span>
+        </div>`
+      : `<div class="popup-route popup-route-empty">No flight plan</div>`;
 
-    if (fp) {
-      content += `${fp.departure} -> ${fp.arrival}<br>`;
-    } else {
-      content += "No flightplan<br>";
-    }
-
-    content += `${altitude}ft - GS${groundspeed}<br>`;
-
-    return content;
+    return `<div class="map-popup">
+      <div class="popup-header">
+        <span class="kind-dot kind-pilot"></span>
+        <span class="popup-callsign">${callsign}</span>
+      </div>
+      <div class="popup-name">${name}</div>
+      ${routeHtml}
+      <div class="popup-metrics">
+        <div class="popup-metric">
+          <span class="metric-label">ALT</span>
+          <span class="metric-val">${altitude.toLocaleString("en-US")} ft</span>
+        </div>
+        <div class="popup-metric">
+          <span class="metric-label">GS</span>
+          <span class="metric-val">${groundspeed} kt</span>
+        </div>
+        <div class="popup-metric">
+          <span class="metric-label">FREQ</span>
+          <span class="metric-val">${freqText}</span>
+        </div>
+      </div>
+    </div>`;
   }
 
   public position(): L.LatLngExpression {

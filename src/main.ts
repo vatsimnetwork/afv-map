@@ -7,6 +7,6 @@ import { TransceiverMap } from "./map";
 import "./style.css";
 
 library.add(faSpinner);
-dom.watch();
+void dom.i2svg();
 
 new TransceiverMap("map");
